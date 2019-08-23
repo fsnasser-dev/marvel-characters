@@ -1,10 +1,10 @@
-package dev.fsnasser.marvelcharacters.adapters
+package dev.fsnasser.marvelcharacters.ui.adapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import dev.fsnasser.marvelcharacters.views.CharactersFragment
-import dev.fsnasser.marvelcharacters.views.FavoritesFragment
+import dev.fsnasser.marvelcharacters.ui.views.CharactersFragment
+import dev.fsnasser.marvelcharacters.ui.views.FavoritesFragment
 
 class MainFragmentAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 

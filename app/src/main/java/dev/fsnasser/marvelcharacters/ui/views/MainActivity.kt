@@ -1,10 +1,10 @@
-package dev.fsnasser.marvelcharacters.views
+package dev.fsnasser.marvelcharacters.ui.views
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import dev.fsnasser.marvelcharacters.R
-import dev.fsnasser.marvelcharacters.adapters.MainFragmentAdapter
+import dev.fsnasser.marvelcharacters.ui.adapters.MainFragmentAdapter
 import dev.fsnasser.marvelcharacters.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +19,8 @@ class MainActivity : AppCompatActivity() {
         )
 
         mBinding.apply {
-            vpCharactersMain.adapter = MainFragmentAdapter(supportFragmentManager)
+            vpCharactersMain.adapter =
+                MainFragmentAdapter(supportFragmentManager)
             tlCharactersMain.setupWithViewPager(vpCharactersMain)
         }
     }

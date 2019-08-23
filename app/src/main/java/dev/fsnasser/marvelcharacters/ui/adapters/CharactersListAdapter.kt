@@ -1,4 +1,4 @@
-package dev.fsnasser.marvelcharacters.adapters
+package dev.fsnasser.marvelcharacters.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.databinding.CharacterListItemBinding
-import dev.fsnasser.marvelcharacters.views.entities.Character
+import dev.fsnasser.marvelcharacters.ui.entities.Character
 
 class CharactersListAdapter(var characters: List<Character>) : RecyclerView.Adapter<CharactersListAdapter.ViewHolder>() {
 

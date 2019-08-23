@@ -1,4 +1,4 @@
-package dev.fsnasser.marvelcharacters.views.entities
+package dev.fsnasser.marvelcharacters.ui.entities
 
 data class Character (
     val id: Long,

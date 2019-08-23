@@ -6,7 +6,7 @@
     <data>
         <variable
             name="character"
-            type="dev.fsnasser.marvelcharacters.views.entities.Character" />
+            type="dev.fsnasser.marvelcharacters.ui.entities.Character" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
