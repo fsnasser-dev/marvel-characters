@@ -1,18 +1,18 @@
 package dev.fsnasser.marvelcharacters.ui.views.detail
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.squareup.picasso.Picasso
+import dagger.android.support.DaggerAppCompatActivity
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.databinding.ActivityCharacterDetailBinding
 import dev.fsnasser.marvelcharacters.ui.adapters.ComicsSeriesAdapter
 import dev.fsnasser.marvelcharacters.ui.entities.Character
 
-class CharacterDetailActivity : AppCompatActivity() {
+class CharacterDetailActivity : DaggerAppCompatActivity() {
 
     companion object {
         const val CHARACTER_OBJ = "CHARACTER_OBJ"

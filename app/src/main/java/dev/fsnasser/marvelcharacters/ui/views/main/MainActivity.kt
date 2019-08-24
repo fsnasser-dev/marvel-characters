@@ -4,16 +4,16 @@ import android.app.SearchManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
+import dagger.android.support.DaggerAppCompatActivity
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.ui.adapters.MainFragmentAdapter
 import dev.fsnasser.marvelcharacters.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
 
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         if (Intent.ACTION_SEARCH == intent?.action) {
             mBinding.tlCharactersMain.requestFocus()
-            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+            intent.getStringExtra(SearchManager.QUERY)?.also { _ ->
                 // TODO: Search by query
             }
         }

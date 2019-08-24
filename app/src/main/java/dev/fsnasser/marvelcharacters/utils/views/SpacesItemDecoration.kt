@@ -1,4 +1,4 @@
-package dev.fsnasser.marvelcharacters.utils
+package dev.fsnasser.marvelcharacters.utils.views
 
 import android.graphics.Rect
 import android.view.View

@@ -1,18 +1,18 @@
 package dev.fsnasser.marvelcharacters.ui.views.main
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import dagger.android.support.DaggerFragment
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.ui.adapters.CharactersListAdapter
 import dev.fsnasser.marvelcharacters.databinding.FragmentFavoritesBinding
 import dev.fsnasser.marvelcharacters.ui.entities.Character
-import dev.fsnasser.marvelcharacters.utils.SpacesItemDecoration
+import dev.fsnasser.marvelcharacters.utils.views.SpacesItemDecoration
 
-class FavoritesFragment : Fragment() {
+class FavoritesFragment : DaggerFragment() {
 
     private lateinit var mBinding: FragmentFavoritesBinding
 
@@ -34,7 +34,13 @@ class FavoritesFragment : Fragment() {
             rvFavoriteCharacters.adapter =
                 CharactersListAdapter(charactersMock)
 
-            rvFavoriteCharacters.addItemDecoration(SpacesItemDecoration(2, 8, false))
+            rvFavoriteCharacters.addItemDecoration(
+                SpacesItemDecoration(
+                    2,
+                    8,
+                    false
+                )
+            )
         }
 
         return mBinding.root
