@@ -31,13 +31,13 @@ android {
             dimension "default"
             applicationId "dev.fsnasser.marvelcharacters"
             versionName "1.0.0"
-            resValue "string", "app_name", "Personagens Marvel"
+            resValue "string", "app_name", "MARVEL Characters"
         }
         staging {
             dimension "default"
             applicationId "dev.fsnasser.marvelcharacters.staging"
             versionName "1.0.0-staging"
-            resValue "string", "app_name", "Personagens Marvel - Homoloação"
+            resValue "string", "app_name", "MARVEL Characters (Staging)"
         }
     }
     dataBinding.enabled = true

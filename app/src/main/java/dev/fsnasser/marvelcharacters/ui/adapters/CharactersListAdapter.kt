@@ -1,5 +1,6 @@
 package dev.fsnasser.marvelcharacters.ui.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -10,6 +11,7 @@ import com.squareup.picasso.Picasso
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.databinding.CharacterListItemBinding
 import dev.fsnasser.marvelcharacters.ui.entities.Character
+import dev.fsnasser.marvelcharacters.ui.views.detail.CharacterDetailActivity
 
 class CharactersListAdapter(var characters: List<Character>) : RecyclerView.Adapter<CharactersListAdapter.ViewHolder>() {
 
@@ -30,33 +32,38 @@ class CharactersListAdapter(var characters: List<Character>) : RecyclerView.Adap
 
         private val mBinding = binding
 
+        private val mContext = mBinding.root.context
+
         fun init(characterItem: Character) {
             mBinding.apply {
                 character = characterItem
                 executePendingBindings()
 
-                characterItem.image?.let { image ->
-                    Picasso.with(mBinding.root.context).load(image).into(ivCharacterItem)
+                if(!characterItem.thumbnail.isNullOrBlank()) {
+                    Picasso.with(mContext).load("${characterItem.thumbnail}/standard_xlarge.jpg")
+                        .into(ivCharacterItem)
                 }
 
                 if(characterItem.isFavorite) {
                     ivCharacterItemFavorite.setOnClickListener {
-                        Toast.makeText(mBinding.root.context, "Removido dos favoritos",
+                        Toast.makeText(mContext, mContext.getString(R.string.removed_from_favorites),
                             Toast.LENGTH_SHORT).show()
                     }
                     ivCharacterItemFavorite.setImageDrawable(
-                        ContextCompat.getDrawable(mBinding.root.context, R.drawable.ic_star))
+                        ContextCompat.getDrawable(mContext, R.drawable.ic_star))
                 } else {
                     ivCharacterItemFavorite.setOnClickListener {
-                        Toast.makeText(mBinding.root.context, "Adicionado aos favoritos",
+                        Toast.makeText(mContext, mContext.getString(R.string.added_to_favorites),
                             Toast.LENGTH_SHORT).show()
                     }
                     ivCharacterItemFavorite.setImageDrawable(
-                        ContextCompat.getDrawable(mBinding.root.context, R.drawable.ic_star_border))
+                        ContextCompat.getDrawable(mContext, R.drawable.ic_star_border))
                 }
 
                 clCharacterItemContainer.setOnClickListener {
-                    //TODO: Ir para a tela de detalhe do personagem
+                    val intent = Intent(mContext, CharacterDetailActivity::class.java)
+                    intent.putExtra(CharacterDetailActivity.CHARACTER_OBJ, characterItem)
+                    mContext.startActivity(intent)
                 }
             }
         }

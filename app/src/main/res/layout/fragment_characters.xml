@@ -6,13 +6,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.views.CharactersFragment">
+        tools:context=".ui.views.main.CharactersFragment">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCharacters"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="2dp"
             android:clipToPadding="false"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
