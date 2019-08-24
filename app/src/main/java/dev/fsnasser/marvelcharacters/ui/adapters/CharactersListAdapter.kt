@@ -13,7 +13,7 @@ import dev.fsnasser.marvelcharacters.databinding.CharacterListItemBinding
 import dev.fsnasser.marvelcharacters.ui.entities.Character
 import dev.fsnasser.marvelcharacters.ui.views.detail.CharacterDetailActivity
 
-class CharactersListAdapter(var characters: List<Character>) : RecyclerView.Adapter<CharactersListAdapter.ViewHolder>() {
+class CharactersListAdapter(private var characters: ArrayList<Character>) : RecyclerView.Adapter<CharactersListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: CharacterListItemBinding = DataBindingUtil.inflate(
@@ -27,6 +27,15 @@ class CharactersListAdapter(var characters: List<Character>) : RecyclerView.Adap
         holder.init(characters[position])
     }
 
+    fun updateCharactersList(charactersList: List<Character>) {
+        characters = ArrayList(charactersList)
+        notifyDataSetChanged()
+    }
+
+    fun addCharactersToList(charactersList: List<Character>) {
+        characters.addAll(charactersList)
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(binding: CharacterListItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -40,7 +49,8 @@ class CharactersListAdapter(var characters: List<Character>) : RecyclerView.Adap
                 executePendingBindings()
 
                 if(!characterItem.thumbnail.isNullOrBlank()) {
-                    Picasso.with(mContext).load("${characterItem.thumbnail}/standard_xlarge.jpg")
+                    Picasso.with(mContext)
+                        .load("${characterItem.thumbnail}/standard_xlarge.${characterItem.thumbnailExt}")
                         .into(ivCharacterItem)
                 }
 

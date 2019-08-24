@@ -6,29 +6,45 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import dagger.android.support.DaggerAppCompatActivity
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.ui.adapters.MainFragmentAdapter
 import dev.fsnasser.marvelcharacters.databinding.ActivityMainBinding
+import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
+
+    private lateinit var mViewModel: MainViewModel
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var mBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        ViewModelProviders.of(this, viewModelFactory)
+            .get(MainViewModel::class.java)
+
         supportActionBar?.elevation = 0.0f
+
+        mViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
 
         mBinding = DataBindingUtil.setContentView(this,
             R.layout.activity_main
         )
 
+        val fragmentAdapter = MainFragmentAdapter(supportFragmentManager, this)
+
         mBinding.apply {
-            vpCharactersMain.adapter =
-                MainFragmentAdapter(supportFragmentManager, this@MainActivity)
+            vpCharactersMain.adapter = fragmentAdapter
             tlCharactersMain.setupWithViewPager(vpCharactersMain)
         }
     }
@@ -37,8 +53,8 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onNewIntent(intent)
         if (Intent.ACTION_SEARCH == intent?.action) {
             mBinding.tlCharactersMain.requestFocus()
-            intent.getStringExtra(SearchManager.QUERY)?.also { _ ->
-                // TODO: Search by query
+            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                mViewModel.search.value = query
             }
         }
     }
@@ -49,6 +65,18 @@ class MainActivity : DaggerAppCompatActivity() {
         val searchView = menuItem?.actionView as SearchView
         searchView.queryHint = getString(R.string.search)
         searchView.maxWidth = Integer.MAX_VALUE
+        searchView.setOnCloseListener {
+            mViewModel.search.value = null
+            false
+        }
+        /*val closeButton = searchView.findViewById<View>(androidx.appcompat.R.id.search_close_btn)
+        closeButton.setOnClickListener {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(searchView.windowToken, 0)
+            searchView.setQuery("", false)
+            searchView.clearFocus()
+            mViewModel.search.value = null
+        }*/
 
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val componentName = ComponentName(this@MainActivity, MainActivity::class.java)

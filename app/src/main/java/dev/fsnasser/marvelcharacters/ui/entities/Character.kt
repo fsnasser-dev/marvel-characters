@@ -5,6 +5,7 @@ import java.io.Serializable
 data class Character (
     val id: Long,
     val thumbnail: String?,
+    val thumbnailExt: String?,
     val name: String,
     val isFavorite: Boolean,
     val description: String?,

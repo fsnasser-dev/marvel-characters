@@ -6,16 +6,64 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import dagger.android.support.DaggerFragment
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.ui.adapters.CharactersListAdapter
 import dev.fsnasser.marvelcharacters.databinding.FragmentCharactersBinding
-import dev.fsnasser.marvelcharacters.ui.entities.Character
 import dev.fsnasser.marvelcharacters.utils.views.SpacesItemDecoration
+import javax.inject.Inject
 
 class CharactersFragment : DaggerFragment() {
 
+    private lateinit var mViewModel: MainViewModel
+
     private lateinit var mBinding: FragmentCharactersBinding
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var mLayoutManager: GridLayoutManager
+
+    private var isLoadingMore = false
+
+    private var isLastPage = false
+
+    private var mStart = 0
+
+    private var mNameStartsWith: String? = null
+
+    private val mRecyclerViewOnScrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            val visibleItemCount = mLayoutManager.childCount
+            val totalItemCount = mLayoutManager.itemCount
+            val firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition()
+
+            if(!isLoadingMore && !isLastPage) {
+                if((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                    && firstVisibleItemPosition >= 0
+                    && totalItemCount >= PAGE_LIMIT - 10) {
+                    mStart += PAGE_LIMIT
+                    isLoadingMore = true
+                    mViewModel.getAll(mStart, PAGE_LIMIT, nameStartsWith = mNameStartsWith)
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity?.let {
+            mViewModel = ViewModelProviders.of(it, viewModelFactory).get(MainViewModel::class.java)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,20 +72,16 @@ class CharactersFragment : DaggerFragment() {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_characters, container,
             false)
 
-        val charactersMock = ArrayList<Character>()
-        charactersMock.add(Character(123, "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784", "3-D Man", true, ""))
-        charactersMock.add(Character(456, "http://i.annihil.us/u/prod/marvel/i/mg/3/20/5232158de5b16", "A-Bomb (HAS)", false, "Rick Jones has been Hulk's best bud since day one, but now he's more than a friend...he's a teammate! Transformed by a Gamma energy explosion, A-Bomb's thick, armored skin is just as strong and powerful as it is blue. And when he curls into action, he uses it like a giant bowling ball of destruction! "))
-        charactersMock.add(Character(789, "http://i.annihil.us/u/prod/marvel/i/mg/6/20/52602f21f29ec", "A.I.M", false, "AIM is a terrorist organization bent on destroying the world."))
-        charactersMock.add(Character(124, "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available", "Aaron Stack", true, ""))
-        charactersMock.add(Character(235, "http://i.annihil.us/u/prod/marvel/i/mg/9/50/4ce18691cbf04", "Abomination (Emil Blonsky)", true, "Formerly known as Emil Blonsky, a spy of Soviet Yugoslavian origin working for the KGB, the Abomination gained his powers after receiving a dose of gamma radiation similar to that which transformed Bruce Banner into the incredible Hulk."))
-        charactersMock.add(Character(346, "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available", "Abomination (Ultimate)", false, ""))
-        charactersMock.add(Character(457, "http://i.annihil.us/u/prod/marvel/i/mg/1/b0/5269678709fb7", "Absorbing Man", false, ""))
-        charactersMock.add(Character(568, "http://i.annihil.us/u/prod/marvel/i/mg/9/30/535feab462a64", "Abyss", true, ""))
-
+        val adapter = CharactersListAdapter(ArrayList())
 
         mBinding.apply {
-            rvCharacters.adapter =
-                CharactersListAdapter(charactersMock)
+            viewModel = mViewModel
+            executePendingBindings()
+
+            mLayoutManager = rvCharacters.layoutManager as GridLayoutManager
+            rvCharacters.addOnScrollListener(mRecyclerViewOnScrollListener)
+
+            rvCharacters.adapter = adapter
 
             rvCharacters.addItemDecoration(
                 SpacesItemDecoration(
@@ -46,12 +90,43 @@ class CharactersFragment : DaggerFragment() {
                     false
                 )
             )
+
+            srCharacters.setOnRefreshListener {
+                mStart = 0
+                isLastPage = false
+                mViewModel.getAll(mStart, PAGE_LIMIT, nameStartsWith = mNameStartsWith,
+                    refreshing = true)
+            }
         }
+
+        mViewModel.characters.observe(this, Observer { characters ->
+            isLoadingMore = false
+
+            if(characters.size < PAGE_LIMIT) isLastPage = true
+
+            if(mStart == 0) adapter.updateCharactersList(characters)
+            else adapter.addCharactersToList(characters)
+        })
+
+        mViewModel.search.observe(this, Observer { nameStartsWith ->
+            mStart = 0
+            isLastPage = false
+            mNameStartsWith = nameStartsWith
+            nameStartsWith?.let {
+                mViewModel.getAll(mStart, PAGE_LIMIT, nameStartsWith = mNameStartsWith)
+            } ?: run {
+                mViewModel.getAll(mStart, PAGE_LIMIT)
+            }
+        })
+
+        mViewModel.getAll(mStart, PAGE_LIMIT)
 
         return mBinding.root
     }
 
     companion object {
+        private const val PAGE_LIMIT = 20
+
         @JvmStatic
         fun newInstance() = CharactersFragment()
     }
