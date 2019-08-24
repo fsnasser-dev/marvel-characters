@@ -69,14 +69,6 @@ class MainActivity : DaggerAppCompatActivity() {
             mViewModel.search.value = null
             false
         }
-        /*val closeButton = searchView.findViewById<View>(androidx.appcompat.R.id.search_close_btn)
-        closeButton.setOnClickListener {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(searchView.windowToken, 0)
-            searchView.setQuery("", false)
-            searchView.clearFocus()
-            mViewModel.search.value = null
-        }*/
 
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val componentName = ComponentName(this@MainActivity, MainActivity::class.java)

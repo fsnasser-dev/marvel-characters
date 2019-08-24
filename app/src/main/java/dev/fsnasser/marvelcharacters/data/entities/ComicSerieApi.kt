@@ -1,16 +1,13 @@
 package dev.fsnasser.marvelcharacters.data.entities
 
-data class CharacterApi (
-    val copyright: String,
+data class ComicSerieApi (
     val data: Data
 ) {
     data class Data (
         val results: List<Result>
     ) {
         data class Result (
-            val id: Long,
-            val name: String,
-            val description: String,
+            val title: String,
             val thumbnail: Thumbnail
         ) {
             data class Thumbnail (

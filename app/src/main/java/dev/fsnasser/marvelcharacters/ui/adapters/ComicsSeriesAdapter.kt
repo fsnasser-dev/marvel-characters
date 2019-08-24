@@ -23,6 +23,11 @@ class ComicsSeriesAdapter(var comicsSeries: List<Character.ComicSerie>) : Recycl
         holder.init(comicsSeries[position])
     }
 
+    fun update(comicSeriesList: List<Character.ComicSerie>) {
+        comicsSeries = comicSeriesList
+        notifyDataSetChanged()
+    }
+
     inner class ViewHolder(binding: ComicSeriesListItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         private val mBinding = binding

@@ -16,7 +16,8 @@ data class Character (
 
     data class ComicSerie (
         val title: String,
-        val thumbnail: String?
+        val thumbnail: String?,
+        val thumbnailExt: String?
     )
 
 }

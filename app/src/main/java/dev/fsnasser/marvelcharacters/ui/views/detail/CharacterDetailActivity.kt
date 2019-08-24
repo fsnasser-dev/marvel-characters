@@ -5,18 +5,28 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.squareup.picasso.Picasso
 import dagger.android.support.DaggerAppCompatActivity
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.databinding.ActivityCharacterDetailBinding
 import dev.fsnasser.marvelcharacters.ui.adapters.ComicsSeriesAdapter
 import dev.fsnasser.marvelcharacters.ui.entities.Character
+import javax.inject.Inject
 
 class CharacterDetailActivity : DaggerAppCompatActivity() {
 
     companion object {
         const val CHARACTER_OBJ = "CHARACTER_OBJ"
+        private const val PAGE_LIMIT = 20
     }
+
+    private lateinit var mViewModel: CharacterDetailViewModel
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var mCharacterIntent: Character
 
@@ -27,6 +37,9 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        mViewModel = ViewModelProviders.of(this, viewModelFactory)
+            .get(CharacterDetailViewModel::class.java)
+
         mCharacterIntent = intent.getSerializableExtra(CHARACTER_OBJ) as Character
 
         title = mCharacterIntent.name
@@ -35,16 +48,7 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
             R.layout.activity_character_detail
         )
 
-        val comics = ArrayList<Character.ComicSerie>()
-        comics.add(Character.ComicSerie("Avengers: The Initiative (2007) #19", "http://i.annihil.us/u/prod/marvel/i/mg/d/03/58dd080719806"))
-        comics.add(Character.ComicSerie("Avengers: The Initiative (2007) #18", "http://i.annihil.us/u/prod/marvel/i/mg/6/20/58dd057d304d1"))
-        comics.add(Character.ComicSerie("Avengers: The Initiative (2007) #17", "http://i.annihil.us/u/prod/marvel/i/mg/b/a0/58dd03dc2ec00"))
-        comics.add(Character.ComicSerie("Avengers: The Initiative (2007) #16", "http://i.annihil.us/u/prod/marvel/i/mg/c/10/58dd01dbc6e51"))
-
-        val series = ArrayList<Character.ComicSerie>()
-        series.add(Character.ComicSerie("Avengers: The Initiative (2007 - 2010)", "http://i.annihil.us/u/prod/marvel/i/mg/5/a0/514a2ed3302f5"))
-        series.add(Character.ComicSerie("Deadpool (1997 - 2002)", "http://i.annihil.us/u/prod/marvel/i/mg/7/03/5130f646465e3"))
-        series.add(Character.ComicSerie("Marvel Premiere (1972 - 1981)", "http://i.annihil.us/u/prod/marvel/i/mg/4/40/5a98437953d4e"))
+        val comicsAdapter = ComicsSeriesAdapter(emptyList())
 
         mBinding.apply {
             if(!mCharacterIntent.thumbnail.isNullOrBlank()) {
@@ -57,11 +61,17 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
                 if(!mCharacterIntent.description.isNullOrBlank()) mCharacterIntent.description
                 else getString(R.string.no_character_description)
 
-            rvCharacterDetailComics.adapter = ComicsSeriesAdapter(comics)
-            rvCharacterDetailSeries.adapter = ComicsSeriesAdapter(series)
+            rvCharacterDetailComics.adapter = comicsAdapter
+            rvCharacterDetailSeries.adapter = ComicsSeriesAdapter(emptyList())
 
             svCharacterDetail.smoothScrollTo(0, 0)
         }
+
+        mViewModel.comics.observe(this, Observer { comics ->
+            comicsAdapter.update(comics)
+        })
+
+        mViewModel.getAllFromCharacter(mCharacterIntent.id, PAGE_LIMIT)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
