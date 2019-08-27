@@ -46,8 +46,8 @@ class CharactersListAdapter(private var characters: ArrayList<Character>,
         character?.let {
             it.isFavorite = !it.isFavorite
             notifyDataSetChanged()
-            mainViewModel.getAllFavorites()
         }
+        mainViewModel.getAllFavorites()
     }
 
     inner class ViewHolder(binding: CharacterListItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -69,8 +69,6 @@ class CharactersListAdapter(private var characters: ArrayList<Character>,
                 if(characterItem.isFavorite) {
                     ivCharacterItemFavorite.setOnClickListener {
                         mainViewModel.removeFromFavorites(characterItem)
-                        Toast.makeText(mContext, mContext.getString(R.string.removed_from_favorites),
-                            Toast.LENGTH_SHORT).show()
                         ivCharacterItemFavorite.setImageDrawable(
                             ContextCompat.getDrawable(mContext, R.drawable.ic_star_border))
                         mainViewModel.updateFavoriteItemId.value = characterItem.id
@@ -81,8 +79,6 @@ class CharactersListAdapter(private var characters: ArrayList<Character>,
                 } else {
                     ivCharacterItemFavorite.setOnClickListener {
                         mainViewModel.addToFavorites(characterItem)
-                        Toast.makeText(mContext, mContext.getString(R.string.added_to_favorites),
-                            Toast.LENGTH_SHORT).show()
                         ivCharacterItemFavorite.setImageDrawable(
                             ContextCompat.getDrawable(mContext, R.drawable.ic_star))
                         mainViewModel.updateFavoriteItemId.value = characterItem.id

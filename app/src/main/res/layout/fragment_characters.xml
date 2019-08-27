@@ -21,7 +21,7 @@
             android:id="@+id/srCharacters"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:refreshing="@{viewModel.status == Status.REFRESHING}"
+            app:refreshing="@{viewModel.charactersStatus == Status.REFRESHING}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -31,6 +31,7 @@
                 android:id="@+id/rvCharacters"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="@{viewModel.charactersStatus == Status.SUCCESS || viewModel.charactersStatus == Status.LOADING || viewModel.charactersStatus == Status.REFRESHING ? View.VISIBLE : View.GONE}"
                 android:clipToPadding="false"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -42,11 +43,21 @@
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{viewModel.status == Status.LOADING ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.charactersStatus == Status.LOADING ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            tools:visibility="gone" />
+
+        <include layout="@layout/warning_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:status="@{viewModel.charactersStatus}"
+            app:warningMessage="@{viewModel.charactersWarningMessage}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

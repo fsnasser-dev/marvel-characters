@@ -107,6 +107,17 @@
                     app:layout_constraintBottom_toBottomOf="@id/rvCharacterDetailComics"
                     tools:visibility="gone"/>
 
+                <include layout="@layout/warning_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:status="@{viewModel.comicsStatus}"
+                    app:warningMessage="@{viewModel.comicsWarningMessage}"
+                    app:layout_constraintTop_toTopOf="@id/rvCharacterDetailComics"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/rvCharacterDetailComics"
+                    tools:visibility="gone" />
+
                 <TextView
                     android:id="@+id/tvCharacterDetailSeries"
                     android:layout_width="wrap_content"
@@ -151,6 +162,18 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:visibility="@{viewModel.seriesStatus == Status.LOADING ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintTop_toTopOf="@id/rvCharacterDetailSeries"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/rvCharacterDetailSeries"
+                    tools:visibility="gone" />
+
+                <include layout="@layout/warning_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:status="@{viewModel.seriesStatus}"
+                    app:warningMessage="@{viewModel.seriesWarningMessage}"
                     app:layout_constraintTop_toTopOf="@id/rvCharacterDetailSeries"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

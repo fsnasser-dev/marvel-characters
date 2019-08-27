@@ -9,4 +9,18 @@
     <string name="no_character_description">This character does not have a description.</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
+
+    <string name="character_term_not_found">Character \'%1$s\' not found.</string>
+    <string name="character_list_error_msg">An error occurred while fetching the character list.</string>
+
+    <string name="favourites_empty_msg">You don\'t have favourites yet.</string>
+    <string name="favourites_list_error_msg">An error occurred while fetching the favourite list.</string>
+
+    <string name="comics_empty_msg">This character has no comics.</string>
+    <string name="comics_list_error_msg">An error occurred while fetching the comics list.</string>
+
+    <string name="series_empty_msg">This character has no series.</string>
+    <string name="series_list_error_msg">An error occurred while fetching the series list.</string>
+
+    <string name="offline_msg">You are offline.</string>
 </resources>

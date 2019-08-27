@@ -43,6 +43,9 @@ class FavoritesFragment : DaggerFragment() {
         val adapter = CharactersListAdapter(ArrayList(), mViewModel)
 
         mBinding.apply {
+            viewModel = mViewModel
+            executePendingBindings()
+
             rvFavoriteCharacters.adapter = adapter
 
             rvFavoriteCharacters.addItemDecoration(

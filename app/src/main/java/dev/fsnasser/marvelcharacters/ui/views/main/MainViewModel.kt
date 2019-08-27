@@ -1,9 +1,10 @@
 package dev.fsnasser.marvelcharacters.ui.views.main
 
-import android.util.Log
+import android.content.Context
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.data.entities.CharacterApi
 import dev.fsnasser.marvelcharacters.data.entities.FavoriteCharacter
 import dev.fsnasser.marvelcharacters.data.repositories.CharactersRepository
@@ -17,13 +18,16 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
+    private val mContext: Context,
     private val mRepository: CharactersRepository) : ViewModel() {
 
-    companion object {
-        private val TAG =  MainViewModel::class.java.simpleName
-    }
+    val charactersStatus = ObservableField<Resource.Status>()
 
-    val status = ObservableField<Resource.Status>()
+    val favoritesStatus = ObservableField<Resource.Status>()
+
+    val charactersWarningMessage = ObservableField<String>()
+
+    val favoritesWarningMessage = ObservableField<String>()
 
     val characters = MutableLiveData<List<Character>>()
 
@@ -37,8 +41,8 @@ class MainViewModel @Inject constructor(
 
     fun getAll(offset: Int, limit: Int, nameStartsWith: String? = null,
                orderBy: String = "name", refreshing: Boolean = false) {
-        if(refreshing) status.set(Resource.Status.REFRESHING)
-        else status.set(Resource.Status.LOADING)
+        if(refreshing) charactersStatus.set(Resource.Status.REFRESHING)
+        else charactersStatus.set(Resource.Status.LOADING)
 
         mCompositeDisposable += mRepository
             .getAll(offset, limit, nameStartsWith, orderBy)
@@ -48,15 +52,32 @@ class MainViewModel @Inject constructor(
 
                 override fun onNext(data: Resource<CharacterApi>) {
                     val dataStatus = data.status
-                    status.set(dataStatus)
+                    charactersStatus.set(dataStatus)
 
-                    if(dataStatus == Resource.Status.SUCCESS) {
-                        characters.value = convertToCharacter(data.response?.data?.results)
+                    when(dataStatus) {
+                        Resource.Status.SUCCESS -> {
+                            characters.value = convertToCharacter(data.response?.data?.results)
+                            return
+                        }
+                        Resource.Status.NO_DATA -> {
+                            nameStartsWith?.let {
+                                charactersWarningMessage.set(mContext.getString(R.string.character_term_not_found, it))
+                            }
+                        }
+                        Resource.Status.NOT_CONNECTED -> {
+                            charactersWarningMessage.set(mContext.getString(R.string.offline_msg))
+                        }
+                        else -> {
+                            charactersWarningMessage.set(mContext.getString(R.string.character_list_error_msg))
+                        }
                     }
+
+                    characters.value = ArrayList()
                 }
 
                 override fun onError(e: Throwable) {
-                    status.set(Resource.Status.ERROR)
+                    charactersStatus.set(Resource.Status.ERROR)
+                    characters.value = ArrayList()
                 }
 
                 override fun onComplete() {}
@@ -73,10 +94,19 @@ class MainViewModel @Inject constructor(
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ favoriteCharactersResult ->
-                favoriteCharacters.value = favoriteCharactersResult
+                if(favoriteCharactersResult.isNotEmpty()) {
+                    favoritesStatus.set(Resource.Status.SUCCESS)
+                    favoriteCharacters.value = favoriteCharactersResult
+                } else {
+                    favoritesStatus.set(Resource.Status.NO_DATA)
+                    favoritesWarningMessage.set(mContext.getString(R.string.favourites_empty_msg))
+                    favoriteCharacters.value = ArrayList()
+                }
             },
             {
-                Log.e(TAG, "Ocorreu um erro ao recuperar a lista de favoritos local.", it)
+                favoritesStatus.set(Resource.Status.ERROR)
+                favoritesWarningMessage.set(mContext.getString(R.string.favourites_list_error_msg))
+                favoriteCharacters.value = ArrayList()
             })
     }
 

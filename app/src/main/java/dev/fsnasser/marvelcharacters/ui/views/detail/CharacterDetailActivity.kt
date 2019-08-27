@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -108,13 +107,9 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
                 if(mCharacterIntent.isFavorite) {
                     mViewModel.removeFromFavourites(mCharacterIntent)
                     item.icon = ContextCompat.getDrawable(this, R.drawable.ic_star_border_nm)
-                    Toast.makeText(this, getString(R.string.removed_from_favorites),
-                        Toast.LENGTH_SHORT).show()
                 } else {
                     mViewModel.addToFavourites(mCharacterIntent)
                     item.icon = ContextCompat.getDrawable(this, R.drawable.ic_star_nm)
-                    Toast.makeText(this, getString(R.string.added_to_favorites),
-                        Toast.LENGTH_SHORT).show()
                 }
                 val intent = Intent()
                 intent.putExtra(CHARACTER_ID, mCharacterIntent.id)

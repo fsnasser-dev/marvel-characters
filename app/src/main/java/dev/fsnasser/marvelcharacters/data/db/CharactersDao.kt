@@ -7,7 +7,7 @@ import dev.fsnasser.marvelcharacters.data.entities.FavoriteCharacter
 @Dao
 interface CharactersDao {
 
-    @Query("SELECT * FROM favourite_characters")
+    @Query("SELECT * FROM favourite_characters ORDER BY name")
     fun getAllFavouriteCharacters(): Single<List<FavoriteCharacter>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
