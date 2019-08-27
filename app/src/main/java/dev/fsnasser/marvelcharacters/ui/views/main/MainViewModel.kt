@@ -1,10 +1,12 @@
 package dev.fsnasser.marvelcharacters.ui.views.main
 
+import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dev.fsnasser.marvelcharacters.data.entities.CharacterApi
-import dev.fsnasser.marvelcharacters.data.rest.characters.CharactersRepository
+import dev.fsnasser.marvelcharacters.data.entities.FavoriteCharacter
+import dev.fsnasser.marvelcharacters.data.repositories.CharactersRepository
 import dev.fsnasser.marvelcharacters.ui.entities.Character
 import dev.fsnasser.marvelcharacters.utils.data.Resource
 import dev.fsnasser.marvelcharacters.utils.extensions.plusAssign
@@ -17,11 +19,19 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val mRepository: CharactersRepository) : ViewModel() {
 
+    companion object {
+        private val TAG =  MainViewModel::class.java.simpleName
+    }
+
     val status = ObservableField<Resource.Status>()
 
     val characters = MutableLiveData<List<Character>>()
 
     val search = MutableLiveData<String>()
+
+    val favoriteCharacters = MutableLiveData<List<FavoriteCharacter>>()
+
+    val updateFavoriteItemId = MutableLiveData<Long>()
 
     private val mCompositeDisposable = CompositeDisposable()
 
@@ -53,13 +63,30 @@ class MainViewModel @Inject constructor(
             })
     }
 
+    fun addToFavorites(character: Character) = mRepository.insertCharacterIntoFavourites(character)
+
+    fun removeFromFavorites(character: Character) = mRepository.removeCharacterFromFavourites(character)
+
+    fun getAllFavorites() {
+        mCompositeDisposable += mRepository
+            .getAllFavouriteCharacters()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ favoriteCharactersResult ->
+                favoriteCharacters.value = favoriteCharactersResult
+            },
+            {
+                Log.e(TAG, "Ocorreu um erro ao recuperar a lista de favoritos local.", it)
+            })
+    }
+
     private fun convertToCharacter(results: List<CharacterApi.Data.Result>?) : List<Character> {
         val characters = ArrayList<Character>()
 
         results?.let {
             for(result in it) {
                 characters.add(Character(result.id, result.thumbnail.path, result.thumbnail.extension,
-                    result.name, false, result.description))
+                    result.name, mRepository.isFavouriteCharacter(result.id), result.description))
             }
         }
 

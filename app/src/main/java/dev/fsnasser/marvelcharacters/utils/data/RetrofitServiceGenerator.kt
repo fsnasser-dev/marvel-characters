@@ -30,7 +30,7 @@ class RetrofitServiceGenerator @Inject constructor() {
         builder.addInterceptor { chain ->
             val original = chain.request()
             val originalHttpUrl = original.url()
-            val timestamp = Date().time.toString()
+            val timestamp = 1.toString()
             val originalUrl = originalHttpUrl.newBuilder()
                 .addQueryParameter("ts", timestamp)
                 .addQueryParameter("apikey", BuildConfig.MARVEL_PUBLIC_API_KEY)

@@ -5,16 +5,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import dagger.android.support.DaggerFragment
 import dev.fsnasser.marvelcharacters.R
-import dev.fsnasser.marvelcharacters.ui.adapters.CharactersListAdapter
 import dev.fsnasser.marvelcharacters.databinding.FragmentFavoritesBinding
+import dev.fsnasser.marvelcharacters.ui.adapters.CharactersListAdapter
 import dev.fsnasser.marvelcharacters.ui.entities.Character
 import dev.fsnasser.marvelcharacters.utils.views.SpacesItemDecoration
+import javax.inject.Inject
 
 class FavoritesFragment : DaggerFragment() {
 
+    private lateinit var mViewModel: MainViewModel
+
     private lateinit var mBinding: FragmentFavoritesBinding
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        activity?.let {
+            mViewModel = ViewModelProviders.of(it, viewModelFactory).get(MainViewModel::class.java)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,16 +40,10 @@ class FavoritesFragment : DaggerFragment() {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_favorites, container,
             false)
 
-        val charactersMock = ArrayList<Character>()
-        //charactersMock.add(Character(123, "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784", "3-D Man", true, ""))
-        //charactersMock.add(Character(124, "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available", "Aaron Stack", true, ""))
-        //charactersMock.add(Character(235, "http://i.annihil.us/u/prod/marvel/i/mg/9/50/4ce18691cbf04", "Abomination (Emil Blonsky)", true, "Formerly known as Emil Blonsky, a spy of Soviet Yugoslavian origin working for the KGB, the Abomination gained his powers after receiving a dose of gamma radiation similar to that which transformed Bruce Banner into the incredible Hulk."))
-        //charactersMock.add(Character(568, "http://i.annihil.us/u/prod/marvel/i/mg/9/30/535feab462a64", "Abyss", true, ""))
-
+        val adapter = CharactersListAdapter(ArrayList(), mViewModel)
 
         mBinding.apply {
-            rvFavoriteCharacters.adapter =
-                CharactersListAdapter(charactersMock)
+            rvFavoriteCharacters.adapter = adapter
 
             rvFavoriteCharacters.addItemDecoration(
                 SpacesItemDecoration(
@@ -42,6 +53,20 @@ class FavoritesFragment : DaggerFragment() {
                 )
             )
         }
+
+        mViewModel.favoriteCharacters.observe(this, Observer { favoriteCharactersResult ->
+            val characters = ArrayList<Character>()
+            for(favoriteCharacter in favoriteCharactersResult) {
+                characters.add(
+                    Character(favoriteCharacter.id, favoriteCharacter.thumbnail,
+                    favoriteCharacter.thumbnailExt, favoriteCharacter.name,
+                    favoriteCharacter.isFavorite, favoriteCharacter.description)
+                )
+            }
+            adapter.updateCharactersList(characters)
+        })
+
+        mViewModel.getAllFavorites()
 
         return mBinding.root
     }

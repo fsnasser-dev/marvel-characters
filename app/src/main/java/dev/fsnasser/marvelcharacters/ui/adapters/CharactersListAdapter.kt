@@ -12,8 +12,12 @@ import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.databinding.CharacterListItemBinding
 import dev.fsnasser.marvelcharacters.ui.entities.Character
 import dev.fsnasser.marvelcharacters.ui.views.detail.CharacterDetailActivity
+import dev.fsnasser.marvelcharacters.ui.views.main.MainActivity
+import dev.fsnasser.marvelcharacters.ui.views.main.MainViewModel
 
-class CharactersListAdapter(private var characters: ArrayList<Character>) : RecyclerView.Adapter<CharactersListAdapter.ViewHolder>() {
+class CharactersListAdapter(private var characters: ArrayList<Character>,
+                            private val mainViewModel: MainViewModel)
+    : RecyclerView.Adapter<CharactersListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: CharacterListItemBinding = DataBindingUtil.inflate(
@@ -37,6 +41,15 @@ class CharactersListAdapter(private var characters: ArrayList<Character>) : Recy
         notifyDataSetChanged()
     }
 
+    fun updateFavoriteItem(characterId: Long) {
+        val character = characters.firstOrNull{ it.id == characterId }
+        character?.let {
+            it.isFavorite = !it.isFavorite
+            notifyDataSetChanged()
+            mainViewModel.getAllFavorites()
+        }
+    }
+
     inner class ViewHolder(binding: CharacterListItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         private val mBinding = binding
@@ -45,8 +58,7 @@ class CharactersListAdapter(private var characters: ArrayList<Character>) : Recy
 
         fun init(characterItem: Character) {
             mBinding.apply {
-                character = characterItem
-                executePendingBindings()
+                tvCharacterItemName.text = characterItem.name
 
                 if(!characterItem.thumbnail.isNullOrBlank()) {
                     Picasso.with(mContext)
@@ -56,16 +68,26 @@ class CharactersListAdapter(private var characters: ArrayList<Character>) : Recy
 
                 if(characterItem.isFavorite) {
                     ivCharacterItemFavorite.setOnClickListener {
+                        mainViewModel.removeFromFavorites(characterItem)
                         Toast.makeText(mContext, mContext.getString(R.string.removed_from_favorites),
                             Toast.LENGTH_SHORT).show()
+                        ivCharacterItemFavorite.setImageDrawable(
+                            ContextCompat.getDrawable(mContext, R.drawable.ic_star_border))
+                        mainViewModel.updateFavoriteItemId.value = characterItem.id
                     }
+
                     ivCharacterItemFavorite.setImageDrawable(
                         ContextCompat.getDrawable(mContext, R.drawable.ic_star))
                 } else {
                     ivCharacterItemFavorite.setOnClickListener {
+                        mainViewModel.addToFavorites(characterItem)
                         Toast.makeText(mContext, mContext.getString(R.string.added_to_favorites),
                             Toast.LENGTH_SHORT).show()
+                        ivCharacterItemFavorite.setImageDrawable(
+                            ContextCompat.getDrawable(mContext, R.drawable.ic_star))
+                        mainViewModel.updateFavoriteItemId.value = characterItem.id
                     }
+
                     ivCharacterItemFavorite.setImageDrawable(
                         ContextCompat.getDrawable(mContext, R.drawable.ic_star_border))
                 }
@@ -73,7 +95,8 @@ class CharactersListAdapter(private var characters: ArrayList<Character>) : Recy
                 clCharacterItemContainer.setOnClickListener {
                     val intent = Intent(mContext, CharacterDetailActivity::class.java)
                     intent.putExtra(CharacterDetailActivity.CHARACTER_OBJ, characterItem)
-                    mContext.startActivity(intent)
+                    val activity = mContext as MainActivity
+                    activity.startActivityForResult(intent, MainActivity.DETAIL_ACTIVITY_REQ)
                 }
             }
         }

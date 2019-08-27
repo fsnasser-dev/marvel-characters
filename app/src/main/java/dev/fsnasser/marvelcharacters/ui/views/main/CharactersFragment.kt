@@ -72,7 +72,7 @@ class CharactersFragment : DaggerFragment() {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_characters, container,
             false)
 
-        val adapter = CharactersListAdapter(ArrayList())
+        val adapter = CharactersListAdapter(ArrayList(), mViewModel)
 
         mBinding.apply {
             viewModel = mViewModel
@@ -116,6 +116,12 @@ class CharactersFragment : DaggerFragment() {
                 mViewModel.getAll(mStart, PAGE_LIMIT, nameStartsWith = mNameStartsWith)
             } ?: run {
                 mViewModel.getAll(mStart, PAGE_LIMIT)
+            }
+        })
+
+        mViewModel.updateFavoriteItemId.observe(this, Observer { characterId ->
+            characterId?.let {
+                adapter.updateFavoriteItem(characterId)
             }
         })
 

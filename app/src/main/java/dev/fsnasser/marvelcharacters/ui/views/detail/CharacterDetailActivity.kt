@@ -1,8 +1,11 @@
 package dev.fsnasser.marvelcharacters.ui.views.detail
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -20,6 +23,7 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
 
     companion object {
         const val CHARACTER_OBJ = "CHARACTER_OBJ"
+        const val CHARACTER_ID = "CHARACTER_ID"
         private const val PAGE_LIMIT = 20
     }
 
@@ -49,8 +53,12 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
         )
 
         val comicsAdapter = ComicsSeriesAdapter(emptyList())
+        val seriesAdapter = ComicsSeriesAdapter(emptyList())
 
         mBinding.apply {
+            viewModel = mViewModel
+            executePendingBindings()
+
             if(!mCharacterIntent.thumbnail.isNullOrBlank()) {
                 Picasso.with(this@CharacterDetailActivity)
                     .load("${mCharacterIntent.thumbnail}/landscape_amazing.${mCharacterIntent.thumbnailExt}")
@@ -62,7 +70,7 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
                 else getString(R.string.no_character_description)
 
             rvCharacterDetailComics.adapter = comicsAdapter
-            rvCharacterDetailSeries.adapter = ComicsSeriesAdapter(emptyList())
+            rvCharacterDetailSeries.adapter = seriesAdapter
 
             svCharacterDetail.smoothScrollTo(0, 0)
         }
@@ -71,7 +79,12 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
             comicsAdapter.update(comics)
         })
 
-        mViewModel.getAllFromCharacter(mCharacterIntent.id, PAGE_LIMIT)
+        mViewModel.series.observe(this, Observer { series ->
+            seriesAdapter.update(series)
+        })
+
+        mViewModel.getAllComicsFromCharacter(mCharacterIntent.id, PAGE_LIMIT)
+        mViewModel.getAllSeriesFromCharacter(mCharacterIntent.id, PAGE_LIMIT)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -92,7 +105,20 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
                 true
             }
             R.id.menu_favorite -> {
-
+                if(mCharacterIntent.isFavorite) {
+                    mViewModel.removeFromFavourites(mCharacterIntent)
+                    item.icon = ContextCompat.getDrawable(this, R.drawable.ic_star_border_nm)
+                    Toast.makeText(this, getString(R.string.removed_from_favorites),
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    mViewModel.addToFavourites(mCharacterIntent)
+                    item.icon = ContextCompat.getDrawable(this, R.drawable.ic_star_nm)
+                    Toast.makeText(this, getString(R.string.added_to_favorites),
+                        Toast.LENGTH_SHORT).show()
+                }
+                val intent = Intent()
+                intent.putExtra(CHARACTER_ID, mCharacterIntent.id)
+                setResult(Activity.RESULT_OK, intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)

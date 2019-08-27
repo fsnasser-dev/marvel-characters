@@ -1,13 +1,12 @@
 package dev.fsnasser.marvelcharacters.ui.views.main
 
+import android.app.Activity
 import android.app.SearchManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -16,9 +15,14 @@ import dagger.android.support.DaggerAppCompatActivity
 import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.ui.adapters.MainFragmentAdapter
 import dev.fsnasser.marvelcharacters.databinding.ActivityMainBinding
+import dev.fsnasser.marvelcharacters.ui.views.detail.CharacterDetailActivity
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
+
+    companion object {
+        const val DETAIL_ACTIVITY_REQ = 8392
+    }
 
     private lateinit var mViewModel: MainViewModel
 
@@ -57,6 +61,14 @@ class MainActivity : DaggerAppCompatActivity() {
                 mViewModel.search.value = query
             }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == DETAIL_ACTIVITY_REQ && resultCode == Activity.RESULT_OK) {
+            val characterId = data?.getLongExtra(CharacterDetailActivity.CHARACTER_ID, 0)
+            if(characterId != null) mViewModel.updateFavoriteItemId.value = characterId
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -7,7 +7,7 @@ data class Character (
     val thumbnail: String?,
     val thumbnailExt: String?,
     val name: String,
-    val isFavorite: Boolean,
+    var isFavorite: Boolean,
     val description: String?,
     val comics: List<ComicSerie>? = null,
     val series: List<ComicSerie>? = null

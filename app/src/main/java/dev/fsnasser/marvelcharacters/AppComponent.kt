@@ -3,6 +3,7 @@ package dev.fsnasser.marvelcharacters
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
+import dev.fsnasser.marvelcharacters.data.db.CharactersDbModule
 import dev.fsnasser.marvelcharacters.ui.views.detail.CharacterDetailActivityModule
 import dev.fsnasser.marvelcharacters.ui.views.main.MainActivityModule
 import dev.fsnasser.marvelcharacters.utils.di.ViewModelBuilder
@@ -14,7 +15,8 @@ import javax.inject.Singleton
     AppModule::class,
     ViewModelBuilder::class,
     MainActivityModule::class,
-    CharacterDetailActivityModule::class
+    CharacterDetailActivityModule::class,
+    CharactersDbModule::class
 ])
 
 interface AppComponent : AndroidInjector<MarvelCharactersApplication> {

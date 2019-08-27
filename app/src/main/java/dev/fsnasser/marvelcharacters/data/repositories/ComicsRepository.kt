@@ -1,6 +1,7 @@
-package dev.fsnasser.marvelcharacters.data.rest.comics
+package dev.fsnasser.marvelcharacters.data.repositories
 
 import dev.fsnasser.marvelcharacters.data.entities.ComicSerieApi
+import dev.fsnasser.marvelcharacters.data.rest.comics.ComicsRemoteDataSource
 import dev.fsnasser.marvelcharacters.utils.data.Resource
 import dev.fsnasser.marvelcharacters.utils.helpers.NetworkHelper
 import io.reactivex.Observable
