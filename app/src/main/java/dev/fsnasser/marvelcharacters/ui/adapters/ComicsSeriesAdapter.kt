@@ -9,7 +9,8 @@ import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.databinding.ComicSeriesListItemBinding
 import dev.fsnasser.marvelcharacters.ui.entities.Character
 
-class ComicsSeriesAdapter(var comicsSeries: List<Character.ComicSerie>) : RecyclerView.Adapter<ComicsSeriesAdapter.ViewHolder>() {
+class ComicsSeriesAdapter(private var comicsSeries: List<Character.ComicSerie>)
+    : RecyclerView.Adapter<ComicsSeriesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: ComicSeriesListItemBinding = DataBindingUtil.inflate(
