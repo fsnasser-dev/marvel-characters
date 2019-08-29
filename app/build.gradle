@@ -97,5 +97,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
-    kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
 }

@@ -123,8 +123,9 @@ class CharactersRepositoryTest {
 
     @Test
     fun getAll_WhenApiReturns500_ReturnError() {
+        val mockedResponse = Response.error<CharacterApi>(500, mock(ResponseBody::class.java))
         `when`(mMockedRemoteDataSource.getAll(0, 20, null, "name"))
-            .thenReturn(Observable.just(Response.error(500, mock(ResponseBody::class.java))))
+            .thenReturn(Observable.just(mockedResponse))
         `when`(mMockedNetworkHelper.isConnectedToInternet).thenReturn(true)
 
         mCompositeDisposable += mCharactersRepository.getAll(0, 20, null, "name")
@@ -144,8 +145,9 @@ class CharactersRepositoryTest {
 
     @Test
     fun getAll_WhenApiReturns409_ReturnError() {
+        val mockedResponse = Response.error<CharacterApi>(409, mock(ResponseBody::class.java))
         `when`(mMockedRemoteDataSource.getAll(0, 101, null, "name"))
-            .thenReturn(Observable.just(Response.error(409, mock(ResponseBody::class.java))))
+            .thenReturn(Observable.just(mockedResponse))
         `when`(mMockedNetworkHelper.isConnectedToInternet).thenReturn(true)
 
         mCompositeDisposable += mCharactersRepository.getAll(0, 101, null, "name")
@@ -165,8 +167,9 @@ class CharactersRepositoryTest {
 
     @Test
     fun getAll_WhenApiReturns401_ReturnError() {
+        val mockedResponse = Response.error<CharacterApi>(401, mock(ResponseBody::class.java))
         `when`(mMockedRemoteDataSource.getAll(0, 20, null, "name"))
-            .thenReturn(Observable.just(Response.error(401, mock(ResponseBody::class.java))))
+            .thenReturn(Observable.just(mockedResponse))
         `when`(mMockedNetworkHelper.isConnectedToInternet).thenReturn(true)
 
         mCompositeDisposable += mCharactersRepository.getAll(0, 20, null, "name")
