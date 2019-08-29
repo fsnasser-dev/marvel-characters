@@ -41,6 +41,7 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <ProgressBar
+            android:id="@+id/pbCharacters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="@{viewModel.charactersStatus == Status.LOADING ? View.VISIBLE : View.GONE}"
@@ -50,7 +51,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             tools:visibility="gone" />
 
-        <include layout="@layout/warning_message"
+        <include
+            android:id="@+id/iCharactersWarning"
+            layout="@layout/warning_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:status="@{viewModel.charactersStatus}"

@@ -7,8 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import dagger.android.support.DaggerAppCompatActivity
@@ -16,6 +18,7 @@ import dev.fsnasser.marvelcharacters.R
 import dev.fsnasser.marvelcharacters.ui.adapters.MainFragmentAdapter
 import dev.fsnasser.marvelcharacters.databinding.ActivityMainBinding
 import dev.fsnasser.marvelcharacters.ui.views.detail.CharacterDetailActivity
+import dev.fsnasser.marvelcharacters.utils.helpers.FetcherListener
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -31,6 +34,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
     private lateinit var mBinding: ActivityMainBinding
 
+    var fetcherListener: FetcherListener? = null //Needed for tests
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,6 +45,7 @@ class MainActivity : DaggerAppCompatActivity() {
         supportActionBar?.elevation = 0.0f
 
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
+        mViewModel.fetcherListener = fetcherListener
 
         mBinding = DataBindingUtil.setContentView(this,
             R.layout.activity_main
@@ -51,6 +57,12 @@ class MainActivity : DaggerAppCompatActivity() {
             vpCharactersMain.adapter = fragmentAdapter
             tlCharactersMain.setupWithViewPager(vpCharactersMain)
         }
+
+        mViewModel.errorMessage.observe(this, Observer { errorMessage ->
+            errorMessage?.let {
+                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onNewIntent(intent: Intent?) {

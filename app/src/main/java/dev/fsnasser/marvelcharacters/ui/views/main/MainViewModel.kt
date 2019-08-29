@@ -11,6 +11,7 @@ import dev.fsnasser.marvelcharacters.data.repositories.CharactersRepository
 import dev.fsnasser.marvelcharacters.ui.entities.Character
 import dev.fsnasser.marvelcharacters.utils.data.Resource
 import dev.fsnasser.marvelcharacters.utils.extensions.plusAssign
+import dev.fsnasser.marvelcharacters.utils.helpers.FetcherListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -29,6 +30,8 @@ class MainViewModel @Inject constructor(
 
     val favoritesWarningMessage = ObservableField<String>()
 
+    val errorMessage = MutableLiveData<String>()
+
     val characters = MutableLiveData<List<Character>>()
 
     val search = MutableLiveData<String>()
@@ -39,6 +42,8 @@ class MainViewModel @Inject constructor(
 
     private val mCompositeDisposable = CompositeDisposable()
 
+    var fetcherListener: FetcherListener? = null //Needed for tests
+
     fun getAll(offset: Int, limit: Int, nameStartsWith: String? = null,
                orderBy: String = "name", refreshing: Boolean = false) {
         if(refreshing) charactersStatus.set(Resource.Status.REFRESHING)
@@ -48,6 +53,8 @@ class MainViewModel @Inject constructor(
             .getAll(offset, limit, nameStartsWith, orderBy)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { fetcherListener?.beginFetching() }
+            .doFinally { fetcherListener?.doneFetching() }
             .subscribeWith(object : DisposableObserver<Resource<CharacterApi>>() {
 
                 override fun onNext(data: Resource<CharacterApi>) {
@@ -84,15 +91,25 @@ class MainViewModel @Inject constructor(
             })
     }
 
-    fun addToFavorites(character: Character) = mRepository.insertCharacterIntoFavourites(character)
+    fun addToFavorites(character: Character) {
+        if(!mRepository.insertCharacterIntoFavourites(character)) {
+            errorMessage.value = mContext.getString(R.string.favourite_add_error_msg)
+        }
+    }
 
-    fun removeFromFavorites(character: Character) = mRepository.removeCharacterFromFavourites(character)
+    fun removeFromFavorites(character: Character) {
+        if(!mRepository.removeCharacterFromFavourites(character)) {
+            errorMessage.value = mContext.getString(R.string.favourite_remove_error_msg)
+        }
+    }
 
     fun getAllFavorites() {
         mCompositeDisposable += mRepository
             .getAllFavouriteCharacters()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { fetcherListener?.beginFetching() }
+            .doFinally { fetcherListener?.doneFetching() }
             .subscribe({ favoriteCharactersResult ->
                 if(favoriteCharactersResult.isNotEmpty()) {
                     favoritesStatus.set(Resource.Status.SUCCESS)

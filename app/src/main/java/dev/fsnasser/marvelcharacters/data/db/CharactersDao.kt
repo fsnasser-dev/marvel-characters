@@ -11,10 +11,10 @@ interface CharactersDao {
     fun getAllFavouriteCharacters(): Single<List<FavoriteCharacter>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(character: FavoriteCharacter)
+    fun insert(character: FavoriteCharacter): Long
 
     @Delete
-    fun remove(character: FavoriteCharacter)
+    fun remove(character: FavoriteCharacter): Int
 
     @Query("SELECT count(*) FROM favourite_characters where id LIKE :id")
     fun isFavouriteCharacter(id: Long): Int

@@ -60,7 +60,7 @@ class CharactersListAdapter(private var characters: ArrayList<Character>,
                 tvCharacterItemName.text = characterItem.name
 
                 if(!characterItem.thumbnail.isNullOrBlank()) {
-                    Picasso.with(mContext)
+                    Picasso.get()
                         .load("${characterItem.thumbnail}/standard_xlarge.${characterItem.thumbnailExt}")
                         .into(ivCharacterItem)
                 }

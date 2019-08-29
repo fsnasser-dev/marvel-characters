@@ -41,7 +41,7 @@ class ComicsSeriesAdapter(private var comicsSeries: List<Character.ComicSerie>)
                 executePendingBindings()
 
                 if(!comicSerieItem.thumbnail.isNullOrBlank()) {
-                    Picasso.with(mContext).load("${comicSerieItem.thumbnail}/portrait_xlarge.jpg")
+                    Picasso.get().load("${comicSerieItem.thumbnail}/portrait_xlarge.jpg")
                         .into(ivComicSeriesImg)
                 }
             }

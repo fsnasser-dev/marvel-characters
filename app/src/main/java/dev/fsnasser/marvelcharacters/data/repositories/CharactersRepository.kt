@@ -44,18 +44,18 @@ class CharactersRepository @Inject constructor(
 
     fun isFavouriteCharacter(id: Long): Boolean = mLocalDataSource.isFavouriteCharacter(id)
 
-    fun insertCharacterIntoFavourites(character: Character) {
+    fun insertCharacterIntoFavourites(character: Character): Boolean {
         val characterDb = FavoriteCharacter(
             character.id, character.thumbnail, character.thumbnailExt,
             character.name, character.isFavorite, character.description)
-        mLocalDataSource.insertCharacterIntoFavourites(characterDb)
+        return mLocalDataSource.insertCharacterIntoFavourites(characterDb) > 0
     }
 
-    fun removeCharacterFromFavourites(character: Character) {
+    fun removeCharacterFromFavourites(character: Character): Boolean {
         val characterDb = FavoriteCharacter(
             character.id, character.thumbnail, character.thumbnailExt,
             character.name, character.isFavorite, character.description)
-        mLocalDataSource.removeCharacterFromFavourites(characterDb)
+        return mLocalDataSource.removeCharacterFromFavourites(characterDb) == 1
     }
 
 

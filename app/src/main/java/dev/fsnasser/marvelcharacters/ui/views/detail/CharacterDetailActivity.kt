@@ -59,7 +59,7 @@ class CharacterDetailActivity : DaggerAppCompatActivity() {
             executePendingBindings()
 
             if(!mCharacterIntent.thumbnail.isNullOrBlank()) {
-                Picasso.with(this@CharacterDetailActivity)
+                Picasso.get()
                     .load("${mCharacterIntent.thumbnail}/landscape_amazing.${mCharacterIntent.thumbnailExt}")
                     .into(ivCharacterDetailImg)
             }

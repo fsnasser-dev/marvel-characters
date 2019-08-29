@@ -28,7 +28,7 @@ class RetrofitServiceGenerator @Inject constructor() {
 
         builder.addInterceptor { chain ->
             val original = chain.request()
-            val originalHttpUrl = original.url()
+            val originalHttpUrl = original.url
             val timestamp = 1.toString()
             val originalUrl = originalHttpUrl.newBuilder()
                 .addQueryParameter("ts", timestamp)
@@ -37,7 +37,7 @@ class RetrofitServiceGenerator @Inject constructor() {
                 .build()
 
             val requestBuilder = original.newBuilder().url(originalUrl)
-            requestBuilder.method(original.method(), original.body())
+            requestBuilder.method(original.method, original.body)
 
             val request = requestBuilder.build()
             chain.proceed(request)

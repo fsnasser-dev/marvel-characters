@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 import androidx.room.Room
+import dev.fsnasser.marvelcharacters.utils.data.MarvelCharactersDatabase
 
 @Module
 class CharactersDbModule {

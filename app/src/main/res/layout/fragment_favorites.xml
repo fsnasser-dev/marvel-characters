@@ -28,7 +28,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             tools:listitem="@layout/character_list_item" />
 
-        <include layout="@layout/warning_message"
+        <include
+            android:id="@+id/iFavouritesWarning"
+            layout="@layout/warning_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:status="@{viewModel.favoritesStatus}"

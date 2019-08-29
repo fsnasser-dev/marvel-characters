@@ -1,6 +1,6 @@
 <resources>
     <string name="characters">Characters</string>
-    <string name="favorites">Favorites</string>
+    <string name="favorites">Favourites</string>
     <string name="comics">Comics</string>
     <string name="series">Series</string>
     <string name="search">Search for characters …</string>
@@ -21,6 +21,9 @@
 
     <string name="series_empty_msg">This character has no series.</string>
     <string name="series_list_error_msg">An error occurred while fetching the series list.</string>
+
+    <string name="favourite_add_error_msg">An error occurred while adding to favourite.</string>
+    <string name="favourite_remove_error_msg">An error occurred while removing from favourite.</string>
 
     <string name="offline_msg">You are offline.</string>
 </resources>

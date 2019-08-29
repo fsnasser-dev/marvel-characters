@@ -13,14 +13,14 @@ class CharactersLocalDataSource @Inject constructor(private val charactersDao: C
 
     fun isFavouriteCharacter(id: Long): Boolean = charactersDao.isFavouriteCharacter(id) > 0
 
-    fun insertCharacterIntoFavourites(favoriteCharacter: FavoriteCharacter) {
+    fun insertCharacterIntoFavourites(favoriteCharacter: FavoriteCharacter): Long {
         favoriteCharacter.isFavorite = true
-        charactersDao.insert(favoriteCharacter)
+        return charactersDao.insert(favoriteCharacter)
     }
 
-    fun removeCharacterFromFavourites(favoriteCharacter: FavoriteCharacter) {
+    fun removeCharacterFromFavourites(favoriteCharacter: FavoriteCharacter): Int {
         favoriteCharacter.isFavorite = false
-        charactersDao.remove(favoriteCharacter)
+        return charactersDao.remove(favoriteCharacter)
     }
 
 }
